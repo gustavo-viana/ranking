@@ -1,2 +1,2 @@
 # ranking
-Ranikin de tennis amigavel
+Ranking de tennis amigável
