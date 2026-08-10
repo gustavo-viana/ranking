@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Ranking e confrontos do Clube Acto">
+  <title>Ranking Acto | Tênis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="integration.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-ball"></span><span><strong>RANKING</strong><small>AMIGOS DO TÊNIS</small></span></a>
+      <nav aria-label="Navegação principal">
+        <button class="tab active" data-view="ranking">Atletas</button>
+        <button class="tab" data-view="matches">Confrontos <b id="matchCount">0</b></button>
+      </nav>
+      <span class="season" id="dataStatus" title="Usando dados locais"><i></i> Temporada 2026</span>
+    </header>
+
+    <main>
+      <section class="view active" id="rankingView">
+        <div class="hero">
+          <div><p class="eyebrow">RANKING OFICIAL DO CLUBE</p><h1>Os melhores do<br><em>nosso clube.</em></h1><p>Acompanhe a classificação, os pontos e a evolução de cada atleta durante a temporada.</p></div>
+          <div class="court-art"><span class="tennis-ball"></span></div>
+        </div>
+        <div class="section-title">
+          <div><p class="eyebrow dark">CLASSIFICAÇÃO</p><h2>Ranking de atletas</h2></div>
+          <label class="search"><span>⌕</span><input id="athleteSearch" type="search" placeholder="Buscar atleta"></label>
+        </div>
+        <div class="ranking-card">
+          <div class="ranking-head"><span>POS.</span><span>ATLETA</span><span>JOGOS</span><span>VITÓRIAS</span><span>PONTOS</span></div>
+          <div id="rankingList"></div>
+          <p class="empty" id="rankingEmpty" hidden>Nenhum atleta encontrado.</p>
+        </div>
+      </section>
+
+      <section class="view" id="matchesView">
+        <div class="matches-hero"><div><p class="eyebrow">AGENDA DO CLUBE</p><h1>Próximos<br><em>confrontos.</em></h1></div><p>Os atletas definem entre si a data, o horário e a quadra de cada partida.</p></div>
+        <div class="section-title match-title">
+          <div><p class="eyebrow dark">CALENDÁRIO</p><h2>Todos os jogos</h2></div>
+          <div class="match-filters">
+            <label class="round-filter">Rodada<select id="roundFilter"><option value="all">Todas as rodadas</option></select></label>
+            <div class="filters"><button class="filter active" data-filter="all">Todos</button><button class="filter" data-filter="Grupo A">Grupo A</button><button class="filter" data-filter="Grupo B">Grupo B</button></div>
+          </div>
+        </div>
+        <div class="matches-grid" id="matchesList"></div>
+        <p class="empty large" id="matchesEmpty" hidden>Nenhum confronto encontrado.</p>
+      </section>
+    </main>
+    <footer><strong>RANKING ACTO</strong><span>Feito para quem vive o tênis dentro e fora da quadra.</span><small>Temporada 2026</small></footer>
+  </div>
+  <script src="google-sheets-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
