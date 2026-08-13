@@ -16,14 +16,15 @@
     <header class="topbar">
       <a class="brand" href="#"><span class="brand-ball"></span><span><strong>RANKING</strong><small>AMIGOS DO TÊNIS</small></span></a>
       <nav aria-label="Navegação principal">
-        <button class="tab active" data-view="ranking">Atletas</button>
+        <button class="tab" data-view="ranking">Atletas</button>
+        <button class="tab active" data-view="unified">Tabela geral</button>
         <button class="tab" data-view="matches">Confrontos <b id="matchCount">0</b></button>
       </nav>
       <span class="season" id="dataStatus" title="Usando dados locais"><i></i> Temporada 2026</span>
     </header>
 
     <main>
-      <section class="view active" id="rankingView">
+      <section class="view" id="rankingView">
         <div class="hero">
           <div><p class="eyebrow">RANKING NÃO OFICIAL DO CLUBE</p><h1>Os melhores do<br><em>nosso clube.</em></h1><p>Acompanhe a classificação, os pontos e a evolução de cada atleta durante a temporada.</p></div>
           <div class="court-art"><span class="tennis-ball"></span></div>
@@ -36,6 +37,19 @@
           <div class="ranking-head"><span>POS.</span><span>ATLETA</span><span>JOGOS</span><span>VITÓRIAS</span><span>PONTOS</span></div>
           <div id="rankingList"></div>
           <p class="empty" id="rankingEmpty" hidden>Nenhum atleta encontrado.</p>
+        </div>
+      </section>
+
+      <section class="view active" id="unifiedView">
+        <div class="matches-hero unified-hero"><div><p class="eyebrow">CLASSIFICACAO GERAL</p><h1>Tabela<br><em>unificada.</em></h1></div><p>Todos os atletas juntos, ranqueados somente pela pontuacao acumulada.</p></div>
+        <div class="section-title">
+          <div><p class="eyebrow dark">PONTOS</p><h2>Ranking geral</h2></div>
+          <label class="search"><span>&#8981;</span><input id="unifiedSearch" type="search" placeholder="Buscar atleta"></label>
+        </div>
+        <div class="ranking-card unified-card">
+          <div class="ranking-head unified-head"><span>POS.</span><span>ATLETA</span><span>JOGOS</span><span>VITÃ“RIAS</span><span>PONTOS</span></div>
+          <div id="unifiedList"></div>
+          <p class="empty" id="unifiedEmpty" hidden>Nenhum atleta encontrado.</p>
         </div>
       </section>
 

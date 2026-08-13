@@ -43,6 +43,10 @@ O administrador edita normalmente a planilha privada no Google Drive. Ao recarre
 
 O Google pode levar alguns minutos para republicar uma alteração. Se os dados ainda não aparecerem, aguarde um pouco e recarregue a página.
 
+## Automatizar pontos e listas
+
+Para puxar os nomes dos atletas em listas suspensas e atualizar automaticamente `pontos`, `jogos` e `vitorias` a partir dos confrontos finalizados, siga o guia `AUTOMATIZAR-GOOGLE-PLANILHAS.md`.
+
 ## Colunas obrigatórias
 
 Não renomeie nem remova os cabeçalhos.

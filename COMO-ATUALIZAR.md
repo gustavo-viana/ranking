@@ -25,3 +25,5 @@ Depois acesse `http://localhost:8000`. O servidor funciona somente enquanto o te
 ## Google Planilhas
 
 Para permitir que um administrador atualize os dados sem acessar os arquivos do site, siga o guia `CONFIGURAR-GOOGLE-PLANILHAS.md`. A integração fica configurada em `google-sheets-config.js`.
+
+Para automatizar listas de atletas, vencedores, pontos, jogos e vitórias dentro do Google Planilhas, siga `AUTOMATIZAR-GOOGLE-PLANILHAS.md`.

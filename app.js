@@ -34,6 +34,16 @@ function renderRanking(query=''){
   document.querySelector('#rankingEmpty').hidden=filtered.length>0;
 }
 
+function renderUnifiedRanking(query=''){
+  const ordered=[...athletes].sort((a,b)=>(b.points||0)-(a.points||0)||a.name.localeCompare(b.name,'pt-BR'));
+  const filtered=ordered.filter(a=>a.name.toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')));
+  document.querySelector('#unifiedList').innerHTML=filtered.map((a,i)=>{
+    const pos=i+1;
+    return `<div class="ranking-row unified-row"><span class="position ${pos<=3?'top':''}">${String(pos).padStart(2,'0')}</span><div class="athlete"><span class="avatar" style="background:${colors[(pos-1)%colors.length]}">${safe(initials(a.name))}</span><span><strong>${safe(a.name)}</strong><small>${safe(a.group)}</small></span></div><span class="stat">${a.games||0}</span><span class="stat wins">${a.wins||0}</span><span class="points">${(a.points||0).toLocaleString('pt-BR')} <small>PTS</small></span></div>`;
+  }).join('');
+  document.querySelector('#unifiedEmpty').hidden=filtered.length>0;
+}
+
 function renderMatches(groupFilter='all',roundFilter='all'){
   const filtered=matches.filter(m=>(groupFilter==='all'||m.group===groupFilter)&&(roundFilter==='all'||m.round===roundFilter));
   document.querySelector('#matchesList').innerHTML=filtered.map((m,i)=>{
@@ -75,9 +85,10 @@ async function loadData(){
   }
 }
 function updateRoundFilter(){const select=document.querySelector('#roundFilter');const selected=select.value;const rounds=[...new Set(matches.map(m=>m.round).filter(Boolean))];select.innerHTML='<option value="all">Todas as rodadas</option>'+rounds.map(round=>`<option value="${safe(round)}">${safe(round)}</option>`).join('');select.value=rounds.includes(selected)?selected:'all'}
-function renderAll(){document.querySelector('#matchCount').textContent=matches.length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value)}
+function renderAll(){document.querySelector('#matchCount').textContent=matches.length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderUnifiedRanking(document.querySelector('#unifiedSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value)}
 document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector(`#${tab.dataset.view}View`).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}));
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));renderMatches(btn.dataset.filter,document.querySelector('#roundFilter').value)}));
 document.querySelector('#roundFilter').addEventListener('change',e=>renderMatches(document.querySelector('.filter.active').dataset.filter,e.target.value));
 document.querySelector('#athleteSearch').addEventListener('input',e=>renderRanking(e.target.value));
+document.querySelector('#unifiedSearch').addEventListener('input',e=>renderUnifiedRanking(e.target.value));
 renderAll(); loadData();
