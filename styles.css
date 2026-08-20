@@ -2,4 +2,6 @@
 
 .unified-head,.unified-row{grid-template-columns:80px minmax(240px,1fr) 120px 120px 120px}
 .unified-hero{background:#254534}
-@media(max-width:760px){.topbar nav{gap:18px}.unified-head,.unified-row{min-width:650px;grid-template-columns:60px minmax(210px,1fr) 90px 90px 95px}}
+.challenges-hero{background:#2d473f}
+@media(max-width:900px){.topbar nav{gap:22px}}
+@media(max-width:760px){.topbar nav{gap:14px;justify-content:flex-start;overflow-x:auto}.tab{white-space:nowrap}.unified-head,.unified-row{min-width:650px;grid-template-columns:60px minmax(210px,1fr) 90px 90px 95px}}
