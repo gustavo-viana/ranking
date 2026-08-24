@@ -72,15 +72,15 @@ function renderMatches(groupFilter='all',roundFilter='all'){
     winner:''
   }));
   const matchItems=matches.map(m=>({...m,type:m.type||m.group}));
-  const allItems=[...matchItems,...challengeMatches];
+  const allItems=[...matchItems];
   const filtered=allItems.filter(m=>(groupFilter==='all'||m.group===groupFilter||m.type===groupFilter)&&(roundFilter==='all'||m.round===roundFilter||normalizedName(m.round)===normalizedName(roundFilter)));
   document.querySelector('#matchesList').innerHTML=filtered.map((m,i)=>{
     const finished=m.status.toLocaleLowerCase('pt-BR')==='finalizado';
     const isChallenge=normalizedName(m.type)==='desafio'||normalizedName(m.group)==='desafio';
     const player1Won=Boolean(m.winner)&&normalizedName(m.winner)===normalizedName(m.player1);
     const player2Won=Boolean(m.winner)&&normalizedName(m.winner)===normalizedName(m.player2);
-    const info=isChallenge?safe(m.score):(finished?`${safe(m.score)} · Vencedor: ${safe(m.winner)}`:([m.date,m.time,m.court].filter(Boolean).map(safe).join(' · ')||'Data, horário e quadra a definir'));
-    const middle=isChallenge?'<span class="versus">EM</span>':'<span class="versus">VS</span>';
+    const info=finished?`${safe(m.score)} · Vencedor: ${safe(m.winner)}`:([m.date,m.time,m.court].filter(Boolean).map(safe).join(' · ')||'Data, horário e quadra a definir');
+    const middle='<span class="versus">VS</span>';
     return `<article class="match-card ${isChallenge?'challenge-match-card':''}"><div class="match-top"><span class="date-badge">${safe(m.month).toUpperCase()} · ${safe(m.round).toUpperCase()}</span><span class="court">${safe(isChallenge?'Desafio':m.group)}</span></div><div class="players"><div class="player ${player1Won?'winner':''}"><span class="avatar" style="background:${colors[i%colors.length]}">${player1Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player1))}</span><strong>${safe(m.player1)}</strong></div>${middle}<div class="player ${player2Won?'winner':''}"><span class="avatar" style="background:${colors[(i+2)%colors.length]}">${player2Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player2))}</span><strong>${safe(m.player2)}</strong></div></div><div class="match-info ${finished||isChallenge?'finished':''}">${info}</div></article>`;
   }).join('');
   document.querySelector('#matchesEmpty').hidden=filtered.length>0;
@@ -142,8 +142,8 @@ async function loadData(){
     console.warn('Usando os dados de reserva. Confira os links publicados do Google Planilhas.',error);
   }
 }
-function updateRoundFilter(){const select=document.querySelector('#roundFilter');const selected=select.value;const rounds=[...new Set([...matches.map(m=>m.round),...challenges.map(c=>c.round)].filter(Boolean))];select.innerHTML='<option value="all">Todas as rodadas</option>'+rounds.map(round=>`<option value="${safe(round)}">${safe(round)}</option>`).join('');select.value=rounds.includes(selected)?selected:'all'}
-function renderAll(){document.querySelector('#matchCount').textContent=matches.length;document.querySelector('#challengeCount').textContent=challenges.length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderUnifiedRanking(document.querySelector('#unifiedSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value);renderChallenges(document.querySelector('#challengeSearch').value)}
+function updateRoundFilter(){const select=document.querySelector('#roundFilter');const selected=select.value;const rounds=[...new Set(matches.map(m=>m.round).filter(Boolean))];select.innerHTML='<option value="all">Todas as rodadas</option>'+rounds.map(round=>`<option value="${safe(round)}">${safe(round)}</option>`).join('');select.value=rounds.includes(selected)?selected:'all'}
+function renderAll(){document.querySelector('#matchCount').textContent=matches.filter(m=>normalizedName(m.status)!=='finalizado').length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderUnifiedRanking(document.querySelector('#unifiedSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value);renderChallenges(document.querySelector('#challengeSearch').value)}
 document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector(`#${tab.dataset.view}View`).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}));
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));renderMatches(btn.dataset.filter,document.querySelector('#roundFilter').value)}));
 document.querySelector('#roundFilter').addEventListener('change',e=>renderMatches(document.querySelector('.filter.active').dataset.filter,e.target.value));

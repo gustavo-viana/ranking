@@ -83,6 +83,7 @@ function onEdit(e) {
 
   if (startCol <= 12 && endCol >= 5) {
     atualizarValidacaoVencedores_();
+    atualizarDesafios_();
     atualizarDesafiosPorConfrontos_();
     recalcularAtletas_();
   }
@@ -100,6 +101,7 @@ function atualizarDesafios_() {
   }
 
   const atletas = atletasSheet.getRange(2, 1, atletasLastRow - 1, 3).getValues();
+  const nomesAtletas = atletas.map(row => row[1]).filter(Boolean);
   const desafiosLastRow = desafiosSheet.getLastRow();
   const desafiosAtuais = desafiosLastRow < 2
     ? []
@@ -107,15 +109,28 @@ function atualizarDesafios_() {
 
   const desafiosPorNome = new Map();
   desafiosAtuais.forEach(row => {
-    const nome = normalizar_(row[1]);
+    const nome = chaveAtleta_(row[1]);
     if (nome) desafiosPorNome.set(nome, row);
   });
 
-  const resultado = atletas
-    .filter(row => row[1])
-    .map(row => {
-      const [ordem, nome, grupo] = row;
-      const atual = desafiosPorNome.get(normalizar_(nome)) || [];
+  const participantes = [];
+
+  DESAFIOS_CONFRONTOS.forEach(par => {
+    const atleta1 = resolverNomeAtleta_(par[0], nomesAtletas);
+    const atleta2 = resolverNomeAtleta_(par[1], nomesAtletas);
+
+    adicionarParticipanteDesafio_(participantes, atleta1, 'Grupo A');
+    adicionarParticipanteDesafio_(participantes, atleta2, 'Grupo B');
+  });
+
+  const resultado = participantes
+    .filter(participante => participante.nome)
+    .map((row, index) => {
+      const { nome, grupo } = row;
+      const atual = desafiosPorNome.get(chaveAtleta_(nome)) || [];
+      const atletaOriginal = atletas.find(atleta => chaveAtleta_(atleta[1]) === chaveAtleta_(nome));
+      const ordemOriginal = atletaOriginal ? atletaOriginal[0] : '';
+      const ordem = ordemOriginal || index + 1;
       const rodada = atual[3] || '1ª Rodada';
       const tipo = atual[4] || 'Desafio';
       const vitorias = numero_(atual[5]);
@@ -132,6 +147,19 @@ function atualizarDesafios_() {
   if (resultado.length) {
     desafiosSheet.getRange(2, 1, resultado.length, 11).setValues(resultado);
   }
+}
+
+function adicionarParticipanteDesafio_(participantes, nome, grupo) {
+  const key = chaveAtleta_(nome);
+  if (!key) return;
+
+  const existente = participantes.find(participante => chaveAtleta_(participante.nome) === key);
+  if (existente) {
+    existente.grupo = grupo;
+    return;
+  }
+
+  participantes.push({ nome, grupo });
 }
 
 function limparLinhasDesafios_(sheet, startRow) {
@@ -203,6 +231,7 @@ function atualizarDesafiosPorConfrontos_() {
 
   const desafios = desafiosSheet.getRange(2, 1, desafiosLastRow - 1, 11).getValues();
   const confrontos = confrontosSheet.getRange(2, 1, confrontosLastRow - 1, 12).getValues();
+  const nomesDesafios = desafios.map(row => row[1]).filter(Boolean);
   const stats = new Map();
 
   desafios.forEach((row, index) => {
@@ -225,15 +254,13 @@ function atualizarDesafiosPorConfrontos_() {
     const atleta2 = row[5];
     const placar = row[10];
 
-    if (normalizar_(grupo) !== 'desafio' || !atleta1 || !atleta2 || !placar) return;
+    if (!['desafio', 'desafios'].includes(normalizar_(grupo)) || !atleta1 || !atleta2 || !placar) return;
 
     const resultado = analisarPlacar_(placar);
     if (!resultado || !resultado.vencedor) return;
 
-    const key1 = chaveAtleta_(atleta1);
-    const key2 = chaveAtleta_(atleta2);
-    const stat1 = stats.get(key1);
-    const stat2 = stats.get(key2);
+    const stat1 = encontrarStatAtleta_(stats, atleta1, nomesDesafios);
+    const stat2 = encontrarStatAtleta_(stats, atleta2, nomesDesafios);
 
     if (stat1) {
       stat1.gamesPro += resultado.games1;
@@ -267,6 +294,14 @@ function atualizarDesafiosPorConfrontos_() {
       pontos
     ]]);
   });
+}
+
+function encontrarStatAtleta_(stats, nome, nomesReferencia) {
+  const direto = stats.get(chaveAtleta_(nome));
+  if (direto) return direto;
+
+  const resolvido = resolverNomeAtleta_(nome, nomesReferencia);
+  return stats.get(chaveAtleta_(resolvido));
 }
 
 function resolverNomeAtleta_(nome, atletas) {
@@ -345,7 +380,7 @@ function recalcularAtletas_() {
     const placar = row[10];
     const vencedor = row[11];
 
-    if (normalizar_(grupo) === 'desafio') return;
+    if (['desafio', 'desafios'].includes(normalizar_(grupo))) return;
     if (normalizar_(status) !== 'finalizado' || !atleta1 || !atleta2 || !placar || !vencedor) return;
 
     const key1 = normalizar_(atleta1);
