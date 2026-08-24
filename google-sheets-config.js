@@ -6,5 +6,5 @@
 window.RANKING_CONFIG = {
   athletesCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROS-6vCGVDqQZ-ugJWp5uQQllA9GVWKXFxSv4-1WIDyqpMcStOnrxw8gAdwEI18Gt7SvGknkoC9BJi/pub?gid=1309701780&single=true&output=csv',
   matchesCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROS-6vCGVDqQZ-ugJWp5uQQllA9GVWKXFxSv4-1WIDyqpMcStOnrxw8gAdwEI18Gt7SvGknkoC9BJi/pub?gid=634953697&single=true&output=csv',
-  challengesCsvUrl: ''
+  challengesCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROS-6vCGVDqQZ-ugJWp5uQQllA9GVWKXFxSv4-1WIDyqpMcStOnrxw8gAdwEI18Gt7SvGknkoC9BJi/pub?gid=539299052&single=true&output=csv'
 };
