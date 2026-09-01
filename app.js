@@ -55,7 +55,7 @@ function renderChallenges(query=''){
   document.querySelector('#challengesEmpty').hidden=filtered.length>0;
 }
 
-function renderMatches(groupFilter='all',roundFilter='all'){
+function renderMatches(groupFilter='all',roundFilter='all',query=''){
   const challengeMatches=challenges.map((c,i)=>({
     id:`D${i+1}`,
     month:'Agosto',
@@ -73,7 +73,13 @@ function renderMatches(groupFilter='all',roundFilter='all'){
   }));
   const matchItems=matches.map(m=>({...m,type:m.type||m.group}));
   const allItems=[...matchItems];
-  const filtered=allItems.filter(m=>(groupFilter==='all'||m.group===groupFilter||m.type===groupFilter)&&(roundFilter==='all'||m.round===roundFilter||normalizedName(m.round)===normalizedName(roundFilter)));
+  const normalizedQuery=normalizedName(query);
+  const filtered=allItems.filter(m=>{
+    const matchesGroup=groupFilter==='all'||m.group===groupFilter||m.type===groupFilter;
+    const matchesRound=roundFilter==='all'||m.round===roundFilter||normalizedName(m.round)===normalizedName(roundFilter);
+    const matchesAthlete=!normalizedQuery||normalizedName(m.player1).includes(normalizedQuery)||normalizedName(m.player2).includes(normalizedQuery);
+    return matchesGroup&&matchesRound&&matchesAthlete;
+  });
   document.querySelector('#matchesList').innerHTML=filtered.map((m,i)=>{
     const finished=m.status.toLocaleLowerCase('pt-BR')==='finalizado';
     const isChallenge=normalizedName(m.type)==='desafio'||normalizedName(m.group)==='desafio';
@@ -143,10 +149,11 @@ async function loadData(){
   }
 }
 function updateRoundFilter(){const select=document.querySelector('#roundFilter');const selected=select.value;const rounds=[...new Set(matches.map(m=>m.round).filter(Boolean))];select.innerHTML='<option value="all">Todas as rodadas</option>'+rounds.map(round=>`<option value="${safe(round)}">${safe(round)}</option>`).join('');select.value=rounds.includes(selected)?selected:'all'}
-function renderAll(){document.querySelector('#matchCount').textContent=matches.filter(m=>normalizedName(m.status)!=='finalizado').length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderUnifiedRanking(document.querySelector('#unifiedSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value);renderChallenges(document.querySelector('#challengeSearch').value)}
+function renderAll(){document.querySelector('#matchCount').textContent=matches.filter(m=>normalizedName(m.status)!=='finalizado').length;updateRoundFilter();renderRanking(document.querySelector('#athleteSearch').value);renderUnifiedRanking(document.querySelector('#unifiedSearch').value);renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value,document.querySelector('#matchSearch').value);renderChallenges(document.querySelector('#challengeSearch').value)}
 document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector(`#${tab.dataset.view}View`).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}));
-document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));renderMatches(btn.dataset.filter,document.querySelector('#roundFilter').value)}));
-document.querySelector('#roundFilter').addEventListener('change',e=>renderMatches(document.querySelector('.filter.active').dataset.filter,e.target.value));
+document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));renderMatches(btn.dataset.filter,document.querySelector('#roundFilter').value,document.querySelector('#matchSearch').value)}));
+document.querySelector('#roundFilter').addEventListener('change',e=>renderMatches(document.querySelector('.filter.active').dataset.filter,e.target.value,document.querySelector('#matchSearch').value));
+document.querySelector('#matchSearch').addEventListener('input',e=>renderMatches(document.querySelector('.filter.active').dataset.filter,document.querySelector('#roundFilter').value,e.target.value));
 document.querySelector('#athleteSearch').addEventListener('input',e=>renderRanking(e.target.value));
 document.querySelector('#unifiedSearch').addEventListener('input',e=>renderUnifiedRanking(e.target.value));
 document.querySelector('#challengeSearch').addEventListener('input',e=>renderChallenges(e.target.value));

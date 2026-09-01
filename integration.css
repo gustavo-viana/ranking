@@ -1,9 +1,10 @@
 .season.google-connected i { background: #34a853; box-shadow: 0 0 0 3px #34a85322; }
 .season.data-error i { background: #e36a42; box-shadow: 0 0 0 3px #e36a4222; }
 .match-filters { display: flex; align-items: flex-end; gap: 12px; }
+.match-search { width: 190px; }
 .round-filter { display: grid; gap: 5px; color: #78817b; font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .round-filter select { min-width: 165px; padding: 9px 32px 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: 600 11px 'DM Sans', sans-serif; cursor: pointer; }
-@media (max-width: 760px) { .match-filters { width: 100%; align-items: stretch; flex-direction: column; } .round-filter select { width: 100%; } }
+@media (max-width: 760px) { .match-filters { width: 100%; align-items: stretch; flex-direction: column; } .match-search, .round-filter select { width: 100%; } }
 .player .avatar { position: relative; }
 .player.winner .avatar { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #d8ad2d; }
 .player.winner strong { color: var(--green); }
