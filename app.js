@@ -41,8 +41,33 @@ function renderRanking(query=''){
   document.querySelector('#rankingEmpty').hidden=filtered.length>0;
 }
 
+function challengeTotalsByAthlete(){
+  return challenges.reduce((totals,c)=>{
+    const key=normalizedName(c.name);
+    if(!key)return totals;
+    const current=totals.get(key)||{points:0,games:0,wins:0};
+    current.points+=c.points||0;
+    current.games+=c.games||0;
+    current.wins+=c.wins||0;
+    totals.set(key,current);
+    return totals;
+  },new Map());
+}
+
+function withoutChallengeStats(a,challengeTotals){
+  const challenge=challengeTotals.get(normalizedName(a.name))||{points:0,games:0,wins:0};
+  return {
+    ...a,
+    points:Math.max(0,(a.points||0)-challenge.points),
+    games:Math.max(0,(a.games||0)-challenge.games),
+    wins:Math.max(0,(a.wins||0)-challenge.wins)
+  };
+}
+
 function renderUnifiedRanking(query=''){
-  const ordered=[...athletes].sort((a,b)=>(b.points||0)-(a.points||0)||a.name.localeCompare(b.name,'pt-BR'));
+  const challengeTotals=challengeTotalsByAthlete();
+  const unifiedAthletes=athletes.map(a=>withoutChallengeStats(a,challengeTotals));
+  const ordered=[...unifiedAthletes].sort((a,b)=>(b.points||0)-(a.points||0)||a.name.localeCompare(b.name,'pt-BR'));
   const filtered=ordered.filter(a=>String(a.name||'').toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')));
   document.querySelector('#unifiedList').innerHTML=filtered.map((a,i)=>rankingRow(a,i+1,'unified-row')).join('');
   document.querySelector('#unifiedEmpty').hidden=filtered.length>0;
