@@ -67,7 +67,7 @@ ordem,nome,grupo,pontos,jogos,vitorias
 `dados/confrontos.csv`:
 
 ```text
-id,mes,rodada,grupo,atleta1,atleta2,data,horario,quadra,status,placar,vencedor
+id,mes,rodada,grupo,atleta1,atleta2,data,horario,quadra,status,placar,vencedor,wo
 ```
 
 `dados/desafios.csv`:
@@ -136,6 +136,15 @@ Desafios em `app.js`:
 - Se `pontos` vier preenchido no CSV, o valor informado prevalece.
 
 Pontuacao dos confrontos normais nao e calculada no site a partir do placar; o site apenas le `pontos`, `jogos` e `vitorias` da aba/CSV de atletas. A automacao de calculo fica descrita no Apps Script em `AUTOMATIZAR-GOOGLE-PLANILHAS.md`.
+
+Regra de WO (coluna `wo` no CSV de confrontos):
+
+- Quando a coluna `wo` contiver exatamente `WO` (maiusculo, case-insensitive), o jogo e tratado como walkover/desistencia.
+- Se o grupo for Desafio: o vencedor recebe `10 pontos` independente do placar.
+- Se o grupo nao for Desafio (Grupo A, Grupo B etc.): o vencedor recebe `20 pontos` independente do placar.
+- O card do confronto exibe badge vermelho `WO`, borda lateral vermelha e a informacao dos pontos concedidos.
+- Os pontos finais continuam sendo registrados manualmente na planilha; a regra no site e apenas visual/informativa.
+
 
 Regra importante: a aba `Atletas` pode exibir os totais completos que vierem da planilha, inclusive desafios. A `Tabela geral` deve descontar os desafios para exibir somente os numeros dos confrontos normais. A aba `Tabela desafios` continua exibindo os desafios separadamente.
 

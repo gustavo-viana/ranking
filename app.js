@@ -107,12 +107,22 @@ function renderMatches(groupFilter='all',roundFilter='all',query=''){
   });
   document.querySelector('#matchesList').innerHTML=filtered.map((m,i)=>{
     const finished=m.status.toLocaleLowerCase('pt-BR')==='finalizado';
+    const isWO=String(m.wo||'').trim().toUpperCase()==='WO';
     const isChallenge=normalizedName(m.type)==='desafio'||normalizedName(m.group)==='desafio';
     const player1Won=Boolean(m.winner)&&normalizedName(m.winner)===normalizedName(m.player1);
     const player2Won=Boolean(m.winner)&&normalizedName(m.winner)===normalizedName(m.player2);
-    const info=finished?`${safe(m.score)} · Vencedor: ${safe(m.winner)}`:([m.date,m.time,m.court].filter(Boolean).map(safe).join(' · ')||'Data, horário e quadra a definir');
+    const woBadge=isWO?'<span class="wo-badge" title="W.O. — desistência ou ausência">WO</span>':'';
+    const woPoints=isWO?(isChallenge?10:20):null;
+    let info;
+    if(isWO&&m.winner){
+      info=`${safe(m.score?m.score+' · ':'')}W.O. · Vencedor: ${safe(m.winner)} <em>(+${woPoints} pts)</em>`;
+    }else if(finished){
+      info=`${safe(m.score)} · Vencedor: ${safe(m.winner)}`;
+    }else{
+      info=[m.date,m.time,m.court].filter(Boolean).map(safe).join(' · ')||'Data, horário e quadra a definir';
+    }
     const middle='<span class="versus">VS</span>';
-    return `<article class="match-card ${isChallenge?'challenge-match-card':''}"><div class="match-top"><span class="date-badge">${safe(m.month).toUpperCase()} · ${safe(m.round).toUpperCase()}</span><span class="court">${safe(isChallenge?'Desafio':m.group)}</span></div><div class="players"><div class="player ${player1Won?'winner':''}"><span class="avatar" style="background:${colors[i%colors.length]}">${player1Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player1))}</span><strong>${safe(m.player1)}</strong></div>${middle}<div class="player ${player2Won?'winner':''}"><span class="avatar" style="background:${colors[(i+2)%colors.length]}">${player2Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player2))}</span><strong>${safe(m.player2)}</strong></div></div><div class="match-info ${finished||isChallenge?'finished':''}">${info}</div></article>`;
+    return `<article class="match-card ${isChallenge?'challenge-match-card':''} ${isWO?'wo-match-card':''}"><div class="match-top"><span class="date-badge">${safe(m.month).toUpperCase()} · ${safe(m.round).toUpperCase()}</span>${woBadge}<span class="court">${safe(isChallenge?'Desafio':m.group)}</span></div><div class="players"><div class="player ${player1Won?'winner':''}"><span class="avatar" style="background:${colors[i%colors.length]}">${player1Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player1))}</span><strong>${safe(m.player1)}</strong></div>${middle}<div class="player ${player2Won?'winner':''}"><span class="avatar" style="background:${colors[(i+2)%colors.length]}">${player2Won?'<span class="winner-crown" aria-label="Vencedor">🏆</span>':''}${safe(initials(m.player2))}</span><strong>${safe(m.player2)}</strong></div></div><div class="match-info ${finished||isChallenge||isWO?'finished':''}">${info}</div></article>`;
   }).join('');
   document.querySelector('#matchesEmpty').hidden=filtered.length>0;
 }
@@ -160,7 +170,7 @@ async function loadData(){
     const [aRes,mRes,cRes]=await Promise.all([fetch(fresh(athleteSource),{cache:'no-store'}),fetch(fresh(matchSource),{cache:'no-store'}),fetch(fresh(challengeSource),{cache:'no-store'})]);
     if(!aRes.ok||!mRes.ok||!cRes.ok)throw new Error('Planilhas indisponíveis');
     athletes=parseCsv(await aRes.text()).map(parseAthleteRow).filter(a=>a.name);
-    matches=parseCsv(await mRes.text()).map(r=>({id:field(r,'id'),month:field(r,'mes','mês'),round:field(r,'rodada'),group:field(r,'grupo'),player1:field(r,'atleta1','atleta 1'),player2:field(r,'atleta2','atleta 2'),date:field(r,'data'),time:field(r,'horario','horário'),court:field(r,'quadra'),status:field(r,'status'),score:field(r,'placar'),winner:field(r,'vencedor')}));
+    matches=parseCsv(await mRes.text()).map(r=>({id:field(r,'id'),month:field(r,'mes','mês'),round:field(r,'rodada'),group:field(r,'grupo'),player1:field(r,'atleta1','atleta 1'),player2:field(r,'atleta2','atleta 2'),date:field(r,'data'),time:field(r,'horario','horário'),court:field(r,'quadra'),status:field(r,'status'),score:field(r,'placar'),winner:field(r,'vencedor'),wo:field(r,'wo')}));
     challenges=parseCsv(await cRes.text()).map(parseChallengeRow).filter(a=>a.name);
     const status=document.querySelector('#dataStatus');
     status.title=usingGoogle?'Dados carregados do Google Planilhas':'Dados carregados dos arquivos locais';

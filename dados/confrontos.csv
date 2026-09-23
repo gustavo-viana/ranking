@@ -1,4 +1,4 @@
-id,mes,rodada,grupo,atleta1,atleta2,data,horario,quadra,status,placar,vencedor
+id,mes,rodada,grupo,atleta1,atleta2,data,horario,quadra,status,placar,vencedor,wo
 1,Agosto,1ª Rodada,Grupo A,Abrahão,Betinho,,,,Agendado,,
 2,Agosto,1ª Rodada,Grupo A,Fernando Corrêa,Michael,,,,Agendado,,
 3,Agosto,1ª Rodada,Grupo A,Fernando Dreyer,Julian,,,,Agendado,,
