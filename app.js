@@ -159,6 +159,16 @@ function parseChallengeRow(r,i){
   };
 }
 
+
+function applyWoToChallenges(){
+  matches
+    .filter(m=>String(m.wo||'').trim().toUpperCase()==='WO'&&Boolean(m.winner)&&(normalizedName(m.type)==='desafio'||normalizedName(m.group)==='desafio'))
+    .forEach(m=>{
+      const entry=challenges.find(c=>normalizedName(c.name)===normalizedName(m.winner));
+      if(entry){entry.points+=10;entry.wins+=1;entry.games+=1;}
+    });
+}
+
 async function loadData(){
   try{
     const config=window.RANKING_CONFIG||{};
@@ -172,6 +182,7 @@ async function loadData(){
     athletes=parseCsv(await aRes.text()).map(parseAthleteRow).filter(a=>a.name);
     matches=parseCsv(await mRes.text()).map(r=>({id:field(r,'id'),month:field(r,'mes','mês'),round:field(r,'rodada'),group:field(r,'grupo'),player1:field(r,'atleta1','atleta 1'),player2:field(r,'atleta2','atleta 2'),date:field(r,'data'),time:field(r,'horario','horário'),court:field(r,'quadra'),status:field(r,'status'),score:field(r,'placar'),winner:field(r,'vencedor'),wo:field(r,'wo')}));
     challenges=parseCsv(await cRes.text()).map(parseChallengeRow).filter(a=>a.name);
+    applyWoToChallenges();
     const status=document.querySelector('#dataStatus');
     status.title=usingGoogle?'Dados carregados do Google Planilhas':'Dados carregados dos arquivos locais';
     status.classList.toggle('google-connected',usingGoogle);
